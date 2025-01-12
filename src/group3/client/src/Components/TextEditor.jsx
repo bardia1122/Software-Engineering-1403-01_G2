@@ -7,7 +7,7 @@ import ReactDOMServer from 'react-dom/server';
 import { FaTrash } from 'react-icons/fa';
 import { SuggestionsContext } from "../contexts/SuggestionsContext";
 import { ContentContext } from "../contexts/ContentContext";
-import { SiAxios } from "react-icons/si";
+import axios from "axios";
 const Inline = Quill.import('blots/inline');
 const Align = Quill.import('formats/align');
 const Direction = Quill.import('formats/direction');
@@ -153,8 +153,9 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     const fetchSuggestions = async (text) => {
         if (!text) return;
         try {
+
             const response = await axios.post("http://127.0.0.1:8000/group3/optimize/", {
-                content: text
+             text: text
             });
             setSuggestions(response.data.suggestions);
         } catch (error) {

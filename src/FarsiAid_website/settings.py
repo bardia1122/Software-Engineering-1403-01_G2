@@ -32,6 +32,7 @@ SECRET_KEY = 'django-insecure-7y^3u&$yspikj)+u)u#vp5#=f=a@w9q1$qjkjas9=#cbf4_%k8
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'group10',
     'registration',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'FarsiAid_website.urls'
