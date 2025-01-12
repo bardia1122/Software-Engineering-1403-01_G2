@@ -1,4 +1,3 @@
-/* Container Styling */
 .suggestion-box {
     border: 1px solid #ddd;
     padding: 10px;
@@ -79,15 +78,13 @@ body.dark-mode .trash-icon:hover {
     unicode-bidi: plaintext;
 }
 .text-content:hover {
-    background-color: #e8f5e9; /* Light green on hover */
+    background-color: #e8f5e9;
 }
 
-/* Suggestion Text Styling */
 .suggestion-text {
     font-size: 16px;
 }
 
-/* Button Group Styling */
 .button-group {
     display: flex;
     justify-content: right;
@@ -111,18 +108,17 @@ body.dark-mode .button-group{
     background-color: rgb(175, 182, 189);
 }
 
-/* Expanded Content Styling */
 .expanded-content {
     margin-top: 10px;
     border-top: 1px solid #ccc;
-    max-height: 0;                   /* Start collapsed */
+    max-height: 0;     
     overflow: hidden;            
-    opacity: 0;                      /* Start invisible */
+    opacity: 0;           
     transition: max-height 0.3s ease-out, opacity 0.5s ease-out, padding 0.3s ease-out;
     padding: 0;  
 }
 .suggestion-box.expanded .expanded-content {
-    opacity: 1;                   /* Fully visible */
-    padding: 10px;                /* Add padding when expanded */
+    opacity: 1;   
+    padding: 10px;     
 }
 

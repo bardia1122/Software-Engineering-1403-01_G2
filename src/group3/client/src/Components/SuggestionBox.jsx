@@ -38,10 +38,16 @@ const SuggestionBox = ({ toggleDarkMode,isDarkMode,content,suggestion, index, ex
         if (quill) {
             const originalLength = end - start + 1;
             const difference = suggest.length - originalLength;
-            console.log(`diff: ${difference}`);
+
+            const currentFormat = quill.getFormat(start);
 
             quill.deleteText(start, originalLength); 
             quill.insertText(start, suggest); 
+
+            quill.formatText(0, quill.getLength(), {
+                align: currentFormat.align || 'right',
+                direction: currentFormat.direction || 'rtl'
+            });
 
             setContent(quill.getText().trim());
             setSuggestions((prevSuggestions) =>
@@ -50,7 +56,7 @@ const SuggestionBox = ({ toggleDarkMode,isDarkMode,content,suggestion, index, ex
                         const updatedItem = {
                         ...item,
                         start: start, 
-                        end: start + suggest.length - 1  // ✅ Correctly adjust based on new length
+                        end: start + suggest.length - 1 
                     };
                     console.log(`Updated Suggestion [${idx}]:`, updatedItem);
                     return updatedItem;
@@ -58,7 +64,7 @@ const SuggestionBox = ({ toggleDarkMode,isDarkMode,content,suggestion, index, ex
                     else if (idx > index) {
                         const updatedItem = {
                             ...item,
-                            start: item.start + difference,  // ✅ Shift following suggestions
+                            start: item.start + difference,
                             end: item.end + difference
                         };
                         console.log(`Shifted Suggestion [${idx}]:`, updatedItem);
@@ -107,8 +113,9 @@ const SuggestionBox = ({ toggleDarkMode,isDarkMode,content,suggestion, index, ex
                     style={{
                         maxHeight: expandedIndex === index ? contentHeight : '0px'
                     }}>
-                    <p>Expanded Suggestion Details:</p>
-                    <p><strong>Suggestion:</strong> {fixRTLText(suggest)}</p>
+                    <p dir='rtl'><strong>توضیحات:</strong></p>
+                    <p>&#34;{fixRTLText(suggest)}&#34; فرمت درستشه.</p>
+                    <p>اگه این پیشنهاد رو میخوای رو من کلیک کن!</p>
                 </div>
             </div>
             

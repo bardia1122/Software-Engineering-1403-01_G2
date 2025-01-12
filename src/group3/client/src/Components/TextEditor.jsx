@@ -80,7 +80,6 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
             quill.root.dataset.placeholder
             = "  متن خود را اینجا بنویسید...";
             const toolbar = quill.getModule('toolbar');
-
             const button = document.createElement('button');
             button.innerHTML = ReactDOMServer.renderToString(<FaTrash />);
             button.classList.add('ql-customTrash');
@@ -95,17 +94,9 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
 
             // Attach the button to the toolbar
             toolbar.container.appendChild(button);
-
-            // Properly handle when the user starts typing to remove placeholder
             quill.on('text-change', () => {
                 const text = quill.getText().trim();
                 setContent(text);
-                if (debounceTimer) clearTimeout(debounceTimer);
-                setDebounceTimer(
-                    setTimeout(() => {
-                        fetchSuggestions(text); // ✅ Call API after delay
-                    }, 500) // 500ms delay for debouncing
-                );
                 if (quill.getLength() > 1) {
                     quill.root.dataset.placeholder =''
                 } else {
@@ -115,6 +106,14 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
             });
         }
     }, [quill]);
+    useEffect(()=>{
+        if (debounceTimer) clearTimeout(debounceTimer);
+            setDebounceTimer(
+                setTimeout(() => {
+                    fetchSuggestions(content);
+                }, 500)
+            );
+    },[content]);
     useEffect(() => {
         if (!quill) return;
         quill.formatText(0, quill.getLength(), 'redUnderline', false);
@@ -134,7 +133,13 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
                 }
             }
         });
-    }, [suggestions, quill,expandedIndex,[]]);
+    }, [suggestions, quill,expandedIndex]);
+    useEffect(()=>{
+
+    },[suggestions])
+    useEffect(()=>{
+        setExpandedIndex(-1);
+    },[suggestions])
     useEffect(()=>{
         if(!quill) return;
 
@@ -151,11 +156,11 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     },[expandedIndex])
 
     const fetchSuggestions = async (text) => {
-        if (!text) return;
+        if (text.length===0) return;
         try {
 
             const response = await axios.post("http://127.0.0.1:8000/group3/optimize/", {
-             text: text
+             text
             });
             setSuggestions(response.data.suggestions);
         } catch (error) {

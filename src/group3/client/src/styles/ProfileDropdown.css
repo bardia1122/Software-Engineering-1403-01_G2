@@ -1,4 +1,3 @@
-/* Profile Dropdown Container */
 .profile-container {
     position: relative;
     display: inline-block;
@@ -84,7 +83,6 @@ body.dark-mode .toggle-icon{
     color: rgb(212, 212, 6);
 }
 
-/* Toggle Switch Styling */
 .switch {
     position: relative;
     display: inline-block;
@@ -149,7 +147,7 @@ body.dark-mode .dropdown-menu {
     border: 1px solid #333;
 }
 body.dark-mode .textresult .toggle-icon {
-    color: white !important;  /* ✅ Make the icon white in dark mode */
+    color: white !important;
 }
 
 body.dark-mode .dark-mode-toggle {
