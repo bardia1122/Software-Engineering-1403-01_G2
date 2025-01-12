@@ -4,7 +4,6 @@
     border: none;
     width: 100%;
     max-width: 800px;
-    /* min-width: 873px; */
     margin: 0 auto;
     font-family: "Open Sans", sans-serif;
     background-color: white;
@@ -52,7 +51,7 @@ body.dark-mode .ql-container {
 }
 body.dark-mode .ql-editor.ql-blank::before {
     content: attr(data-placeholder);
-    color: #bbb !important;        /* Lighter placeholder */
+    color: #bbb !important;    
     font-style: italic;
     opacity: 0.7;
 }
@@ -217,7 +216,7 @@ body.dark-mode .ql-fill {
 .ql-size-24px { font-size: 24px !important; }
 
 .ql-picker.ql-size .ql-picker-item[data-value=""]::before {
-    content: ''; /* Hides Normal as default */
+    content: ''; 
     display: none;
 }
 
@@ -230,24 +229,21 @@ body.dark-mode .ql-fill {
 .ql-toolbar button, .ql-customTrash{
     transition: color 0.2s ease, transform 0.2s ease;
 }
-/* Styling the placeholder using data-placeholder attribute */
 .ql-editor::before {
-    content: attr(data-placeholder);  /* Displaying the data-placeholder text */
+    content: attr(data-placeholder);
     font-style: italic;
     color: gray;
     font-size: 18px;
     line-height: 1.6;
-    pointer-events: none;  /* Prevents clicking on placeholder */
+    pointer-events: none;  
     position: absolute;
     direction: rtl;
     top: 20px;
-    right: 20px;  /* Moved to the right side */
+    right: 20px; 
     text-align: inherit;
-    opacity: 0.7;  /* Slight transparency */
-    white-space: pre-wrap;  /* Prevents space collapsing */
+    opacity: 0.7; 
+    white-space: pre-wrap; 
 }
-
-/* Prevent bold styling for the text being typed */
 .ql-editor {
     font-weight: normal;
     padding: 20px;
