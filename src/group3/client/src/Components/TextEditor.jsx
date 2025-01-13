@@ -1,4 +1,4 @@
-import React, { useEffect,useContext,useState } from "react";
+import React, { useEffect,useContext,useState,useRef } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import "../styles/TextEditor.css";
@@ -39,7 +39,8 @@ Quill.register(Size, true);
 const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     const { suggestions, setSuggestions } = useContext(SuggestionsContext);
     const {content , setContent, setQuill} = useContext(ContentContext);
-    const [debounceTimer, setDebounceTimer] = useState(null);
+    const debounceTimerRef = useRef(null);
+    const isFormattingRef = useRef(false);
     const modules = {
         toolbar: {
             container: [
@@ -52,7 +53,6 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
                 [{ list: 'ordered' }, { list: 'bullet' }],
             ],
         },
-        placeholder: "Start typing your content here..." 
     };
 
     const formats = [
@@ -69,7 +69,6 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     useEffect(()=>{
         setQuill(quill);
     },[quill])
-    
     
 
     useEffect(() => {
@@ -95,6 +94,8 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
             // Attach the button to the toolbar
             toolbar.container.appendChild(button);
             quill.on('text-change', () => {
+                if(isFormattingRef.current) return;
+
                 const text = quill.getText().trim();
                 setContent(text);
                 if (quill.getLength() > 1) {
@@ -103,40 +104,60 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
                     quill.root.dataset.placeholder
                      = "  متن خود را اینجا بنویسید...";
                 }
-            });
+        });
         }
     }, [quill]);
     useEffect(()=>{
-        if (debounceTimer) clearTimeout(debounceTimer);
-            setDebounceTimer(
-                setTimeout(() => {
-                    fetchSuggestions(content);
-                }, 500)
-            );
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current=setTimeout(() => {
+            fetchSuggestions(content);
+        }, 500);
+        
+        
     },[content]);
     useEffect(() => {
+        if (quill) {
+            quill.root.setAttribute('spellcheck', 'false');  // Directly disabling spellcheck
+        }
+    }, [quill]);
+    useEffect(() => {
         if (!quill) return;
+        isFormattingRef.current=true;
+        // console.log(expandedIndex)
         quill.formatText(0, quill.getLength(), 'redUnderline', false);
+        quill.root.querySelectorAll('.protected-red-underline').forEach(el => {
+            el.outerHTML = el.innerHTML;  // Remove the span but keep the text
+        });
 
         suggestions.forEach((suggestion , index) => {
             quill.formatText(suggestion.start, suggestion.end-suggestion.start+1, 'redUnderline', String(index));
             
         });
+        quill.updateContents([
+            { retain: quill.getLength() }, // Retain all content
+            { insert: '\u200B' }, // Insert zero-width space
+        ], 'silent');
+    
+        quill.deleteText(quill.getLength() - 1, 1, 'silent');
+        quill.update('silent');
 
-        quill.root.addEventListener('click', (event) => {
+        isFormattingRef.current=false;
+
+        const handleClick = (event) => {
             const clickedElement = event.target.closest('.protected-red-underline');
             if (clickedElement) {
                 const clickedIndex = clickedElement.getAttribute('data-suggestion-index');
                 setExpandedIndex(Number(clickedIndex));
-                if(!isOpen){
+                if (!isOpen) {
                     setIsOpen(!isOpen);
                 }
             }
-        });
-    }, [suggestions, quill,expandedIndex]);
-    useEffect(()=>{
-
-    },[suggestions])
+        };
+        quill.root.addEventListener('click', handleClick);
+        return () => {
+            quill.root.removeEventListener('click', handleClick);
+        };
+    }, [suggestions, quill]);
     useEffect(()=>{
         setExpandedIndex(-1);
     },[suggestions])
@@ -156,18 +177,27 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     },[expandedIndex])
 
     const fetchSuggestions = async (text) => {
-        if (text.length===0) return;
+        if (!text||text.length===0) return;
         try {
 
             const response = await axios.post("http://127.0.0.1:8000/group3/optimize/", {
              text
             });
             setSuggestions(response.data.suggestions);
+            quill.update('silent');
         } catch (error) {
             console.error("Error fetching suggestions:", error);
         }
     };
+        
+    if ((suggestions.length === 0|| content.length===0) && quill ){
+        quill.formatText(0, quill.getLength(), 'redUnderline', false);
+        quill.root.querySelectorAll('.protected-red-underline').forEach(el => {
+            el.outerHTML = el.innerHTML;  // Remove the span but keep the text
+        });
+    }
 
+        
     return (
         <div className="text-editor">
             <div ref={quillRef} className="editor-textarea"></div>

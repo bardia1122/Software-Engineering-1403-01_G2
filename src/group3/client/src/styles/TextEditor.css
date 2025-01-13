@@ -121,7 +121,6 @@ body.dark-mode .ql-fill {
 }
 .protected-red-underline.active {
     background-color: rgba(255, 0, 0, 0.5);
-    text-decoration: none;
 }
 
 
