@@ -48,6 +48,5 @@ def post_text(request):
         optimized_text = process_input(input_text)
         return toJson(optimized_text)
     
-mydb = query.create_db_connection(secret.DB_HOST, secret.DB_PORT, secret.DB_USER, secret.DB_PASSWORD, secret.DB_NAME)
-query.save_texts(mydb, )
+
 
