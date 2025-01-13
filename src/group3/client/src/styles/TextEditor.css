@@ -107,12 +107,23 @@ body.dark-mode .ql-stroke {
 body.dark-mode .ql-fill {
     fill: white !important;
 }
+.ql-editor .protected-red-underline {
+    text-decoration: underline !important;
+    text-underline-offset: 5px !important;
+    text-decoration-color: red !important;
+    text-decoration-style: wavy !important;
+    visibility: visible !important;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
 
 .protected-red-underline {
-    text-decoration: underline;
-    text-underline-offset: 5px;
-    text-decoration-color: red;
-    text-decoration-style: wavy;
+    text-decoration: underline !important;
+    text-underline-offset: 5px !important;
+    text-decoration-color: red !important;
+    text-decoration-style: wavy !important;
+    visibility: visible !important;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }

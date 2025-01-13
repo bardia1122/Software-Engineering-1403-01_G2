@@ -18,6 +18,7 @@ class RedUnderlineBlot extends Inline {
     static create(value) {
         const node = super.create();
         node.classList.add('protected-red-underline');
+        node.style.textDecoration = 'underline wavy red';
         node.setAttribute("data-suggestion-index", String(value));
         return node;
     }
@@ -41,6 +42,7 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     const {content , setContent, setQuill} = useContext(ContentContext);
     const debounceTimerRef = useRef(null);
     const isFormattingRef = useRef(false);
+    const [apiContent,setApiContent] = useState();
     const modules = {
         toolbar: {
             container: [
@@ -98,6 +100,7 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
 
                 const text = quill.getText().trim();
                 setContent(text);
+                setApiContent(text);
                 if (quill.getLength() > 1) {
                     quill.root.dataset.placeholder =''
                 } else {
@@ -110,11 +113,9 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     useEffect(()=>{
         if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current=setTimeout(() => {
-            fetchSuggestions(content);
+            fetchSuggestions(apiContent);
         }, 500);
-        
-        
-    },[content]);
+    },[apiContent]);
     useEffect(() => {
         if (quill) {
             quill.root.setAttribute('spellcheck', 'false');  // Directly disabling spellcheck
@@ -123,7 +124,7 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     useEffect(() => {
         if (!quill) return;
         isFormattingRef.current=true;
-        // console.log(expandedIndex)
+        
         quill.formatText(0, quill.getLength(), 'redUnderline', false);
         quill.root.querySelectorAll('.protected-red-underline').forEach(el => {
             el.outerHTML = el.innerHTML;  // Remove the span but keep the text
@@ -140,6 +141,9 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     
         quill.deleteText(quill.getLength() - 1, 1, 'silent');
         quill.update('silent');
+        quill.root.style.display = 'none';  
+        quill.root.offsetHeight;  // Force a reflow by accessing the height
+        quill.root.style.display = '';
 
         isFormattingRef.current=false;
 
@@ -179,7 +183,6 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     const fetchSuggestions = async (text) => {
         if (!text||text.length===0) return;
         try {
-
             const response = await axios.post("http://127.0.0.1:8000/group3/optimize/", {
              text
             });
