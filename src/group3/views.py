@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from .serializer import toJson
+from .database import query,secret
 
 # Create your views here.
 
@@ -47,5 +48,6 @@ def post_text(request):
         optimized_text = process_input(input_text)
         return toJson(optimized_text)
     
-
+mydb = query.create_db_connection(secret.DB_HOST, secret.DB_PORT, secret.DB_USER, secret.DB_PASSWORD, secret.DB_NAME)
+query.save_texts(mydb, )
 
