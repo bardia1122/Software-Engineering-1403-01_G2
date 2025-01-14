@@ -1,5 +1,7 @@
+import re
+
 def find_suggestions(inputStr, outputStr):
-    # تابع کمکی برای محاسبه ماتریس LCS در سطح کلمات
+
     def lcs_matrix(a, b):
         m, n = len(a), len(b)
         dp = [[0] * (n + 1) for _ in range(m + 1)]
@@ -11,7 +13,7 @@ def find_suggestions(inputStr, outputStr):
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
         return dp
 
-    # تابع برای بازسازی LCS
+
     def traceback_lcs(dp, a, b):
         i, j = len(a), len(b)
         lcs_indices = []
@@ -26,65 +28,59 @@ def find_suggestions(inputStr, outputStr):
                 j -= 1
         return lcs_indices[::-1]
 
-    # تقسیم رشته به کلمات و ذخیره موقعیت‌های آن‌ها
+
     def split_with_indices(s):
-        words = []
+        tokens = []
         indices = []
-        current = 0
-        for word in s.split():
-            start = s.find(word, current)
-            end = start + len(word)
-            words.append(word)
-            indices.append((start, end))
-            current = end
-        return words, indices
+        for match in re.finditer(r'\S+|\s+', s):
+            tokens.append(match.group())
+            indices.append((match.start(), match.end()))
+        return tokens, indices
 
-    input_words, input_indices = split_with_indices(inputStr)
-    output_words, output_indices = split_with_indices(outputStr)
+    input_tokens, input_indices = split_with_indices(inputStr)
+    output_tokens, output_indices = split_with_indices(outputStr)
 
-    # محاسبه ماتریس و شاخص‌های LCS
-    dp = lcs_matrix(input_words, output_words)
-    lcs_indices = traceback_lcs(dp, input_words, output_words)
 
-    # شناسایی تغییرات
+    dp = lcs_matrix(input_tokens, output_tokens)
+    lcs_indices = traceback_lcs(dp, input_tokens, output_tokens)
+
     suggestions = []
     input_idx = 0
     output_idx = 0
     lcs_pos = 0
 
-    while input_idx < len(input_words) or output_idx < len(output_words):
+    while input_idx < len(input_tokens) or output_idx < len(output_tokens):
         if (lcs_pos < len(lcs_indices) and
-            input_idx < len(input_words) and
-            output_idx < len(output_words) and
+            input_idx < len(input_tokens) and
+            output_idx < len(output_tokens) and
             input_idx == lcs_indices[lcs_pos][0] and
             output_idx == lcs_indices[lcs_pos][1]):
-            # تطابق در LCS پیدا شد، حرکت به کلمه بعدی
+            
             input_idx += 1
             output_idx += 1
             lcs_pos += 1
         else:
-            # شروع تغییر
-            if input_idx < len(input_words):
+            
+            if input_idx < len(input_tokens):
                 start_input, end_input = input_indices[input_idx]
             else:
                 start_input, end_input = len(inputStr), len(inputStr)
-            if output_idx < len(output_words):
-                start_output, end_output = output_indices[output_idx]
-                suggest = output_words[output_idx]
+            if output_idx < len(output_tokens):
+                suggest = output_tokens[output_idx]
                 output_idx += 1
             else:
                 suggest = ''
             suggestions.append({
                 "start": start_input,
-                "end": end_input,
+                "end": end_input - 1,
                 "suggest": suggest
             })
-            if input_idx < len(input_words):
+            if input_idx < len(input_tokens):
                 input_idx += 1
 
-    print(inputStr, " ", outputStr, " ", suggestions)
+    print("Input:", inputStr)
+    print("Output:", outputStr)
+    print("Suggestions:", suggestions)
     return suggestions
 
-input_string = 'میتوانم'
-output_string = 'می‌توانم'
-print(find_suggestions(input_string, output_string))
+

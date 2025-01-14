@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from .models import TextOptimization
-import json
 
-def toJson(output_text):
-    return json.dumps(output_text)
+class SuggestionSerializer(serializers.Serializer):
+    start = serializers.IntegerField()
+    end = serializers.IntegerField()
+    suggestion = serializers.CharField(max_length=255)
+
+class TextSuggestionSerializer(serializers.Serializer):
+    text = serializers.CharField()
