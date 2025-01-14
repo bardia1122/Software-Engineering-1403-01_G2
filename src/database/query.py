@@ -217,3 +217,18 @@ def save_texts(mydb, input_text, errors, output_text):
         print("Failed to insert user:", err)
     finally:
         my_cursor.close()
+
+def save_suggestion(connection, start, end, suggestion):
+    with connection.cursor() as cursor:
+        insert_query = """
+            INSERT INTO group3_suggestions (start, end, suggestion)
+            VALUES (%s, %s, %s);
+        """
+        try:
+            cursor.execute(insert_query, [start, end, suggestion])
+            mydb.commit()
+            print('inserted succesfuly')
+        except mysql.Error as err:
+            print("Failed to insert user:", err)
+        finally:
+            my_cursor.close()
