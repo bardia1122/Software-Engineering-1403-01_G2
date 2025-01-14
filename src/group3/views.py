@@ -10,8 +10,9 @@ from .database import query,secret
 from .parse import find_suggestions
 from .logic import process_input
 from .serializer import SuggestionSerializer, TextSuggestionSerializer
+from .database.query import save_suggestion
 # Create your views here.
-
+mydb = query.create_db_connection(secret.DB_HOST, secret.DB_PORT, secret.DB_USER, secret.DB_PASSWORD, secret.DB_NAME)
 def home(request):
     return render (request , 'group3.html' , {'group_number': '3'})
 
@@ -34,18 +35,16 @@ class TextMistakesAPIView(APIView):
             print(str(e))
         try:
             for suggestion in mistakes:
-                print('test1')
                 suggestion_serializer = SuggestionSerializer(data=suggestion)
-                print('test2')
-                if True:
-                    print('test3')
+                if suggestion_serializer.is_valid():
                     start = suggestion_serializer.validated_data['start']
-                    print(f"start: {start}")
                     end = suggestion_serializer.validated_data['end']
-                    suggestion_text = suggestion_serializer.validated_data['suggestion']
-                    save_suggestion(start, end, suggestion_text)
+                    suggestion_text = suggestion_serializer.validated_data['suggest']
+                    save_suggestion(mydb, start, end, suggestion_text)
                 else:
-                    return Response({"error": "Invalid suggestion data"}, status=status.HTTP_400_BAD_REQUEST)
+                    print("Validation errors:", suggestion_serializer.errors)
+                    return Response({"error": suggestion_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             print(f"{e} my error")
         

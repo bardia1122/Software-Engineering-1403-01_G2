@@ -218,10 +218,18 @@ def save_texts(mydb, input_text, output_text, suggestions):
     finally:
         my_cursor.close()
 
-def save_suggestion(start, end, suggestion):
+def save_suggestion(connection, start, end, suggestion):
     with connection.cursor() as cursor:
         insert_query = """
-            INSERT INTO suggestions (start, end, suggestion)
+            INSERT INTO group3_suggestions (start, end, suggestion)
             VALUES (%s, %s, %s);
         """
-        cursor.execute(insert_query, [start, end, suggestion])
+        try:
+            cursor.execute(insert_query, [start, end, suggestion])
+            # تغییر این خط:
+            connection.commit()  # اینجا به‌جای mydb.commit() از connection.commit() استفاده کنید
+            print('inserted succesfuly')
+        except mysql.connector.Error as err:
+            print("Failed to insert user:", err)
+        finally:
+            print('helo')
