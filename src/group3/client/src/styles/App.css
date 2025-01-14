@@ -17,6 +17,22 @@ body.dark-mode .toggle-button:hover {
 }
 body.dark-mode .error {
     color: white !important;
+    box-shadow: 2px 2px 4px rgba(70, 67, 67, 0.5);
+}
+@font-face {
+    font-family: 'B Nazanin';
+    src: url('/path/to/B-Nazanin.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+.error{
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    border-radius: 7px;
+    font-family: "B nazanin";
+}
+body{
+    font-family: "B nazanin";
 }
 .button-container{
     display: flex;
@@ -41,11 +57,11 @@ body.dark-mode .error {
     height: 30px;
     width: 30px;
     border-radius: 15px;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
     margin: 0;
 }
 .toggle-button:hover{
-    background-color: rgb(202, 196, 196);
+    background-color: rgb(201, 231, 234);
 }
 
 .button-container.shifted {

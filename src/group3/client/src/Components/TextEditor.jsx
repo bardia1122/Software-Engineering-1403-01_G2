@@ -11,6 +11,17 @@ import axios from "axios";
 const Inline = Quill.import('blots/inline');
 const Align = Quill.import('formats/align');
 const Direction = Quill.import('formats/direction');
+const Font = Quill.import('formats/font');
+const Size = Quill.import('formats/size');
+
+Font.whitelist = [
+    'arial', 
+    'courier', 
+    'tahoma', 
+    'b-nazanin' 
+];
+Quill.register(Font, true);
+
 Quill.register(Align, true);
 Quill.register(Direction, true);
 
@@ -33,7 +44,7 @@ RedUnderlineBlot.tagName = 'span';
 Quill.register(RedUnderlineBlot, true);
 
 
-const Size = Quill.import('formats/size');
+
 Size.whitelist = ['16px', '18px', '20px', '24px'];
 Quill.register(Size, true);
 
@@ -47,7 +58,7 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
         toolbar: {
             container: [
                 [{ size: Size.whitelist }],
-                [{ font: [] }],
+                [{ font: Font.whitelist }],
                 ['bold', 'italic', 'underline'],
                 [{ 'color': [] }, { 'background': [] }],
                 [{ align: [] }],
@@ -76,7 +87,9 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     useEffect(() => {
         if (quill) {
             quill.format('align', 'right');
-            quill.format('direction', 'rtl')
+            quill.format('direction', 'rtl');
+            quill.format('font', 'b-nazanin');
+            quill.getModule('toolbar').container.querySelector('.ql-font').value = 'b-nazanin';
 
             quill.root.dataset.placeholder
             = "  متن خود را اینجا بنویسید...";

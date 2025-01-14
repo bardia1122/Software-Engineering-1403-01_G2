@@ -275,3 +275,45 @@ body.dark-mode .ql-fill {
 .ql-align-center { text-align: center !important; }
 .ql-align-justify { text-align: right !important; }
 .ql-align-left { text-align: left !important; }
+
+/* Base Quill Font Styles */
+.ql-font-arial { font-family: Arial, sans-serif; }
+.ql-font-courier { font-family: Courier, monospace; }
+.ql-font-tahoma { font-family: Tahoma, sans-serif; }
+
+/* Custom Persian Font (Ensure the file path is correct) */
+@font-face {
+    font-family: 'B Nazanin';
+    src: url('/path/to/B-Nazanin.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.ql-font-b-nazanin {
+    font-family: 'B Nazanin';
+}
+
+/* Ensure the Dropdown Displays Correct Names for Each Font */
+.ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+    font-family: Arial;
+    content: "Arial";
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="courier"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="courier"]::before {
+    font-family: Courier;
+    content: "Courier";
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="tahoma"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="tahoma"]::before {
+    font-family: Tahoma;
+    content: "Tahoma";
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="b-nazanin"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="b-nazanin"]::before {
+    font-family: 'B Nazanin';
+    content: "B Nazanin";
+}
