@@ -5,7 +5,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-#from .serializer import toJson
 from .database import query,secret
 from .parse import find_suggestions
 from .logic import process_input

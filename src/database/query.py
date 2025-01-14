@@ -199,25 +199,6 @@ def search_posts_tag_for_all(db_connection, query):
     return posts_list
 
 #group 3 data base
-def save_texts(mydb, input_text, errors, output_text):
-    my_cursor = mydb.cursor()
-
-    # دستور SQL برای اضافه کردن متن
-    add_text_query = """
-    INSERT INTO group3_texts (input_text, errors, output_text)
-    VALUES (%s, %s, %s);
-    """
-    
-    try:
-        # اجرای دستور و اضافه کردن متن
-        my_cursor.execute(add_text_query, (input_text, errors, output_text))
-        mydb.commit() # تایید تغییرات
-        print("text saved successfully.")
-    except mysql.Error as err:
-        print("Failed to insert user:", err)
-    finally:
-        my_cursor.close()
-
 def save_suggestion(connection, start, end, suggestion):
     with connection.cursor() as cursor:
         insert_query = """
