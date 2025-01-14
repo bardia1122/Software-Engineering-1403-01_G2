@@ -198,7 +198,7 @@ def search_posts_tag_for_all(db_connection, query):
     cursor.close()
     return posts_list
 
-#group 3 data base
+# group 3 database
 def save_texts(mydb, input_text, errors, output_text):
     my_cursor = mydb.cursor()
 
