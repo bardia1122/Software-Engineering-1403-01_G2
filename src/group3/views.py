@@ -7,7 +7,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from .serializer import toJson
 from .database import query,secret
-
+from .parse import find_suggestions
+from .logic import process_input
 # Create your views here.
 
 def home(request):
@@ -28,8 +29,10 @@ class TextMistakesAPIView(APIView):
 
 # Replace this with your actual text processing logic
 def process_text(text):
+    output_text = process_input(text)
+    suggestions = find_suggestions(text, output_text)
     # Example: Find dummy mistakes in the text
-    return [{"start":0, "end": 5, "suggest": "سلام"}]
+    return suggestions
 
 
 def optimize_text(request):

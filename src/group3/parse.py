@@ -1,89 +1,90 @@
-import re
+def find_suggestions(inputStr, outputStr):
+    # تابع کمکی برای محاسبه ماتریس LCS در سطح کلمات
+    def lcs_matrix(a, b):
+        m, n = len(a), len(b)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if a[i - 1] == b[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + 1
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        return dp
 
-def find_word_boundary(text, index):
-    """Find the start index of the word containing the current index."""
-    # Move left until a space or start of the text
-    while index > 0 and text[index - 1] not in (' ', '\n'):
-        index -= 1
-    return index
+    # تابع برای بازسازی LCS
+    def traceback_lcs(dp, a, b):
+        i, j = len(a), len(b)
+        lcs_indices = []
+        while i > 0 and j > 0:
+            if a[i - 1] == b[j - 1]:
+                lcs_indices.append((i - 1, j - 1))
+                i -= 1
+                j -= 1
+            elif dp[i - 1][j] >= dp[i][j - 1]:
+                i -= 1
+            else:
+                j -= 1
+        return lcs_indices[::-1]
 
-def generate_suggestions(input_text, corrected_text):
-    input_index = 0
-    corrected_index = 0
+    # تقسیم رشته به کلمات و ذخیره موقعیت‌های آن‌ها
+    def split_with_indices(s):
+        words = []
+        indices = []
+        current = 0
+        for word in s.split():
+            start = s.find(word, current)
+            end = start + len(word)
+            words.append(word)
+            indices.append((start, end))
+            current = end
+        return words, indices
+
+    input_words, input_indices = split_with_indices(inputStr)
+    output_words, output_indices = split_with_indices(outputStr)
+
+    # محاسبه ماتریس و شاخص‌های LCS
+    dp = lcs_matrix(input_words, output_words)
+    lcs_indices = traceback_lcs(dp, input_words, output_words)
+
+    # شناسایی تغییرات
     suggestions = []
+    input_idx = 0
+    output_idx = 0
+    lcs_pos = 0
 
-    while input_index < len(input_text) and corrected_index < len(corrected_text):
-        input_char = input_text[input_index]
-        corrected_char = corrected_text[corrected_index]
-
-        # Match, move both pointers
-        if input_char == corrected_char:
-            input_index += 1
-            corrected_index += 1
-            continue
-
-        # Detect Consecutive Spaces (merged into one suggestion)
-        if input_char == " " and corrected_char != " ":
-            start_index = find_word_boundary(input_text, input_index)
-            while input_index < len(input_text) and input_text[input_index] == " ":
-                input_index += 1
+    while input_idx < len(input_words) or output_idx < len(output_words):
+        if (lcs_pos < len(lcs_indices) and
+            input_idx < len(input_words) and
+            output_idx < len(output_words) and
+            input_idx == lcs_indices[lcs_pos][0] and
+            output_idx == lcs_indices[lcs_pos][1]):
+            # تطابق در LCS پیدا شد، حرکت به کلمه بعدی
+            input_idx += 1
+            output_idx += 1
+            lcs_pos += 1
+        else:
+            # شروع تغییر
+            if input_idx < len(input_words):
+                start_input, end_input = input_indices[input_idx]
+            else:
+                start_input, end_input = len(inputStr), len(inputStr)
+            if output_idx < len(output_words):
+                start_output, end_output = output_indices[output_idx]
+                suggest = output_words[output_idx]
+                output_idx += 1
+            else:
+                suggest = ''
             suggestions.append({
-                "start": start_index,
-                "end": input_index,
-                "original": input_text[start_index:input_index],
-                "suggestion": corrected_text[start_index:corrected_index + 1]
+                "start": start_input,
+                "end": end_input,
+                "suggest": suggest
             })
-            continue
+            if input_idx < len(input_words):
+                input_idx += 1
 
-        # Detect Half-Space Insertions
-        if corrected_char == "‌" and input_char != "‌":
-            start_index = find_word_boundary(input_text, input_index)
-            suggestions.append({
-                "start": start_index,
-                "end": input_index + 1,
-                "original": input_text[start_index:input_index + 1],
-                "suggestion": corrected_text[start_index:corrected_index + 1]
-            })
-            corrected_index += 1
-            continue
-
-        # Handle Simple Character Replacements (Adjusted to Word Boundary)
-        start_index = find_word_boundary(input_text, input_index)
-        suggestions.append({
-            "start": start_index,
-            "end": input_index + 1,
-            "original": input_text[start_index:input_index + 1],
-            "suggestion": corrected_text[start_index:corrected_index + 1]
-        })
-
-        input_index += 1
-        corrected_index += 1
-
-    # Handle Remaining Characters in Input (Deletions)
-    while input_index < len(input_text):
-        start_index = find_word_boundary(input_text, input_index)
-        suggestions.append({
-            "start": start_index,
-            "end": len(input_text),
-            "original": input_text[start_index:],
-            "suggestion": ""
-        })
-        break
-
-    # Handle Remaining Characters in Corrected Text (Insertions)
-    while corrected_index < len(corrected_text):
-        start_index = find_word_boundary(corrected_text, corrected_index)
-        suggestions.append({
-            "start": start_index,
-            "end": len(corrected_text),
-            "original": "",
-            "suggestion": corrected_text[start_index:]
-        })
-        break
-
+    print(inputStr, " ", outputStr, " ", suggestions)
     return suggestions
 
-input_text = "من میتوانم    یا می توانم   ."
-output_text = "من می‌توانم یا می‌توانم."
-print(generate_suggestions(input_text,output_text))
-print(f"word is: {input_text[20:28]} end of word")
+input_string = 'میتوانم'
+output_string = 'می‌توانم'
+print(find_suggestions(input_string, output_string))

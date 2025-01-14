@@ -183,7 +183,7 @@ const TextEditor = ({expandedIndex,setExpandedIndex,isOpen , setIsOpen}) => {
     const fetchSuggestions = async (text) => {
         if (!text||text.length===0) return;
         try {
-            const response = await axios.post("http://127.0.0.1:8000/group3/optimize/", {
+            const response = await axios.post("http://127.0.0.1:9000/group3/optimize/", {
              text
             });
             setSuggestions(response.data.suggestions);
